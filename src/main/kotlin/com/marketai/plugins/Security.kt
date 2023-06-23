@@ -1,4 +1,4 @@
-package com.example.plugins
+package com.marketai.plugins
 
 import io.ktor.server.sessions.*
 import io.ktor.server.response.*

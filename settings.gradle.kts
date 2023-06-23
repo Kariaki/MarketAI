@@ -1,1 +1,1 @@
-rootProject.name = "com.example.marketai"
+rootProject.name = "com.marketai.marketai"

@@ -1,4 +1,4 @@
-package com.example.plugins
+package com.marketai.plugins
 
 import io.ktor.http.*
 import io.ktor.server.plugins.cors.routing.*
