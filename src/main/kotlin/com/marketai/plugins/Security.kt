@@ -1,22 +1,23 @@
 package com.marketai.plugins
 
+import com.marketai.session.GuestSession
 import io.ktor.server.sessions.*
 import io.ktor.server.response.*
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
+import java.util.UUID
 
 fun Application.configureSecurity() {
-    data class MySession(val count: Int = 0)
-    install(Sessions) {
-        cookie<MySession>("MY_SESSION") {
-            cookie.extensions["SameSite"] = "lax"
+     install(Sessions) {
+        cookie<GuestSession>("guest-session")
+    }
+
+    intercept(ApplicationCallPipeline.Features){
+        if(call.sessions.get<GuestSession>()==null){
+            val sessionId = generateSessionId()
+            val session = GuestSession(sessionId)
+            call.sessions.set(session)
         }
     }
-    routing {
-        get("/session/increment") {
-                val session = call.sessions.get<MySession>() ?: MySession()
-                call.sessions.set(session.copy(count = session.count + 1))
-                call.respondText("Counter is ${session.count}. Refresh to increment.")
-            }
-    }
+
 }
