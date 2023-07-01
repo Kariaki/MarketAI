@@ -29,7 +29,7 @@ fun Application.configureRouting() {
             }
             try {
                 for (frame in incoming) {
-                    val result = controller.handlePrompt(frame)
+                    val result = controller.handlePrompt(frame.toString())
                     this.send(result)
                     // val actionResult = Json.decodeFromString<SocketAction>(receivedText)
                 }
