@@ -17,9 +17,21 @@ application {
     val isDevelopment: Boolean = project.ext.has("development")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
 }
+tasks {
+    create("stage").dependsOn("installDist")
+}
 
+tasks.withType<Jar> {
+    from("resources") {
+        include("*.json")
+    }
+}
 repositories {
     mavenCentral()
+    mavenLocal()
+    google()
+    maven { url = uri("https://maven.pkg.jetbrains.space/public/p/ktor/eap") }
+
 }
 
 dependencies {
@@ -54,4 +66,14 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:$logback_version")
     implementation("io.ktor:ktor-client-logging:$ktor_version")
 
+}
+
+val compileKotlin: org.jetbrains.kotlin.gradle.tasks.KotlinCompile by tasks
+compileKotlin.kotlinOptions {
+    jvmTarget = "1.8"
+}
+val compileTestKotlin: org.jetbrains.kotlin.gradle.tasks.KotlinCompile by tasks
+
+compileTestKotlin.kotlinOptions {
+    jvmTarget = "1.8"
 }

@@ -1,0 +1,1 @@
+web: ./build/install/com.marketai.marketai/bin/com.marketai.marketai

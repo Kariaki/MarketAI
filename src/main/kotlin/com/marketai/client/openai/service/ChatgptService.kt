@@ -22,7 +22,6 @@ class ChatgptService(
             setBody(body)
         }
         println(response.bodyAsText())
-        //  if (response.status == HttpStatusCode.OK) {
         val responseBody = response.bodyAsText()
         Gson().fromJson(responseBody, OpenAiPromptResponse::class.java)
 

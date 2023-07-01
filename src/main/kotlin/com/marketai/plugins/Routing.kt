@@ -18,10 +18,10 @@ fun Application.configureRouting() {
     val controller: MarketAiChatController by inject()
 
     routing {
+
         get("/") {
             call.respondText("Hello World!")
         }
-
         webSocket("/chat") {
             val session = call.sessions.get<GuestSession>() ?: kotlin.run {
                 close()

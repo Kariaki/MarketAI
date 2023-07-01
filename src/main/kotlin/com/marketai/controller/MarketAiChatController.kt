@@ -3,6 +3,8 @@ package com.marketai.controller
 import com.marketai.client.openai.model.ClientMessage
 import com.marketai.client.openai.model.OpenAiPromptBody
 import com.marketai.client.openai.repository.OpenAiPromptRepository
+import com.marketai.core.Constants
+import com.marketai.core.Role
 import io.ktor.websocket.*
 
 class MarketAiChatController(
@@ -10,20 +12,24 @@ class MarketAiChatController(
 ) {
 
     private val message: MutableList<ClientMessage> = mutableListOf()
-    suspend fun handlePrompt(frame: Frame): String {
-        val newFrame = frame as Frame.Text
-        message.add(ClientMessage(content = newFrame.readText(), role = "user"))
-        val body = OpenAiPromptBody(message, "gpt-3.5-turbo")
+    suspend fun handlePrompt(frame: String): String {
+        message.add(ClientMessage(content = frame, role = Role.USER.name.lowercase()))
+        val body = OpenAiPromptBody(message, Constants.model)
         try {
 
             val result = repository.promptOpenAi(body)
             val output = result.choices.first().message.content
-            val assistantResponse = ClientMessage("assistant", output)
+            val assistantResponse = ClientMessage(Role.ASSISTANT.name.lowercase(), output)
             message.add(assistantResponse)
             return output
         } catch (e: Exception) {
             throw e
         }
+    }
+
+    private suspend fun marketAiSubPrompt(text: String): String {
+
+        return ""
     }
 
 }
