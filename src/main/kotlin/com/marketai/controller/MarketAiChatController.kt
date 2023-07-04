@@ -5,6 +5,7 @@ import com.marketai.client.openai.model.OpenAiPromptBody
 import com.marketai.client.openai.repository.OpenAiPromptRepository
 import com.marketai.core.Constants
 import com.marketai.core.Role
+import com.marketai.session.GuestSession
 import io.ktor.websocket.*
 
 class MarketAiChatController(
@@ -12,7 +13,7 @@ class MarketAiChatController(
 ) {
 
     private val message: MutableList<ClientMessage> = mutableListOf()
-    suspend fun handlePrompt(frame: String): String {
+    suspend fun handlePrompt(frame: String,session:GuestSession): String {
         message.add(ClientMessage(content = frame, role = Role.USER.name.lowercase()))
         val body = OpenAiPromptBody(message, Constants.model)
         try {
