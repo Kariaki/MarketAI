@@ -1,6 +1,9 @@
 package com.marketai.plugins
 
 import com.marketai.controller.MarketAiChatController
+import com.marketai.domain.entities.toFrameResponseError
+import com.marketai.domain.entities.toJson
+import com.marketai.domain.toJson
 import com.marketai.exceptions.OpenAiException
 import com.marketai.session.GuestSession
 import io.ktor.server.routing.*
@@ -31,8 +34,8 @@ fun Application.configureRouting() {
                 for (frame in incoming) {
                     val text = frame as Frame.Text
                     val input = text.readText()
-                   val result = controller.handlePrompt(input,session)
-                    this.send(result)
+                    val result = controller.handlePrompt(input, session)
+                    this.send(result.toJson())
                     //val actionResult = Json.decodeFromString<SocketAction>(receivedText)
                 }
                 /*
@@ -47,10 +50,10 @@ fun Application.configureRouting() {
                  */
             } catch (e: OpenAiException) {
                 e.printStackTrace()
-                this.send(e.message)
+                this.send(e.message.toFrameResponseError())
             } catch (e: Exception) {
                 e.printStackTrace()
-                this.send(e.localizedMessage)
+                this.send(e.localizedMessage.toFrameResponseError())
             }
         }
 
