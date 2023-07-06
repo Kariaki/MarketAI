@@ -1,5 +1,5 @@
 package com.marketai.core
 
 enum class PromptCategory {
-    Facebook,Twitter,Text,Error
+    Facebook, Twitter, Blog, Text, Website, Error, All
 }

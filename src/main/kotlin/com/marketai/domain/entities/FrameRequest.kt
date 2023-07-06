@@ -3,6 +3,8 @@ package com.marketai.domain.entities
 import com.google.gson.Gson
 import com.marketai.client.openai.model.ClientMessage
 import com.marketai.core.MarkettRoles
+import com.marketai.core.PromptCategory
+import com.marketai.core.Prompts
 import com.marketai.core.Role
 import kotlinx.serialization.Serializable
 
@@ -13,7 +15,12 @@ data class FrameRequest(
 )
 
 fun FrameRequest.toClientMessage(): ClientMessage {
-    return ClientMessage(content = content, role = Role.USER.name.lowercase())
+    val newContent = if (role == MarkettRoles.markett) {
+        val category = PromptCategory.valueOf(content)
+        val result = Prompts.prompts[category]
+        result ?: ""
+    } else content
+    return ClientMessage(content = newContent, role = Role.USER.name.lowercase())
 }
 
 fun String.toFrameRequest(): FrameRequest {

@@ -11,6 +11,7 @@ import com.marketai.domain.entities.FrameResponse
 import com.marketai.domain.entities.FrameResponseData
 import com.marketai.domain.entities.toClientMessage
 import com.marketai.domain.entities.toFrameRequest
+import com.marketai.exceptions.ImproperInputException
 import com.marketai.session.GuestSession
 import io.ktor.websocket.*
 
@@ -19,8 +20,9 @@ class MarketAiChatController(
 ) {
 
     private val message: MutableList<ClientMessage> = mutableListOf()
-    suspend fun handlePrompt(frame: String,session:GuestSession): FrameBaseResponse {
-        val clientMessage= frame.toFrameRequest().toClientMessage()
+    suspend fun handlePrompt(frame: String, session: GuestSession): FrameBaseResponse {
+        val clientMessage = frame.toFrameRequest().toClientMessage()
+        if (clientMessage.content.isEmpty()) throw ImproperInputException()
         message.add(clientMessage)
         val body = OpenAiPromptBody(message, Constants.model)
         try {
@@ -29,13 +31,13 @@ class MarketAiChatController(
             val assistantResponse = ClientMessage(Role.ASSISTANT.name.lowercase(), output)
             message.add(assistantResponse)
 
-            val frameResponse =  FrameResponse(
+            val frameResponse = FrameResponse(
                 PromptCategory.Text, FrameResponseData(
                     output, listOf()
                 )
             )
             return FrameBaseResponse(
-                error=null, result = listOf(frameResponse)
+                error = null, result = listOf(frameResponse)
             )
         } catch (e: Exception) {
             throw e

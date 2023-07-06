@@ -17,9 +17,7 @@ import kotlinx.serialization.json.Json
 import org.koin.ktor.ext.inject
 
 fun Application.configureRouting() {
-
     val controller: MarketAiChatController by inject()
-
     routing {
 
         get("/") {
