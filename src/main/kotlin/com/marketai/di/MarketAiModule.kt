@@ -3,13 +3,14 @@ package com.marketai.di
 import com.marketai.client.openai.repository.OpenAiPromptRepository
 import com.marketai.client.openai.service.ChatgptService
 import com.marketai.client.openai.service.FakeMarketApiService
-import com.marketai.controller.MarketAiChatController
+import com.marketai.controller.MarketAiController
 import com.marketai.controller.OpenAiController
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.json.*
 import io.ktor.client.plugins.kotlinx.serializer.*
+import io.ktor.client.plugins.websocket.*
 import org.koin.core.qualifier.Qualifier
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -24,20 +25,19 @@ val markettAiModule = module {
             install(HttpTimeout){
                 requestTimeoutMillis = 240000
             }
+            install(WebSockets){
+
+            }
 
         }
     }
 
     single {
-        Injector.inject
+        MarketAiController(get())
     }
 
     single {
-        MarketAiChatController(get())
-    }
-
-    single {
-        OpenAiController(get(named(get())))
+        OpenAiController(get())
     }
 
 

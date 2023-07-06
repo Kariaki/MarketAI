@@ -1,6 +1,6 @@
 package com.marketai.plugins
 
-import com.marketai.controller.MarketAiChatController
+import com.marketai.controller.MarketAiController
 import com.marketai.domain.entities.toFrameResponseError
 import com.marketai.domain.entities.toJson
 import com.marketai.domain.toJson
@@ -17,35 +17,35 @@ import kotlinx.serialization.json.Json
 import org.koin.ktor.ext.inject
 
 fun Application.configureRouting() {
-    val controller: MarketAiChatController by inject()
+
+    val controller: MarketAiController by inject()
+
     routing {
 
         get("/") {
             call.respondText("Hello World!")
         }
+
         webSocket("/chat") {
             val session = call.sessions.get<GuestSession>() ?: kotlin.run {
                 close()
                 return@webSocket
             }
+            controller.connectToSocket(session, this)
             try {
                 for (frame in incoming) {
                     val text = frame as Frame.Text
                     val input = text.readText()
-                    val result = controller.handlePrompt(input, session)
-                    this.send(result.toJson())
-                    //val actionResult = Json.decodeFromString<SocketAction>(receivedText)
+                    controller.handlePrompt(input, session)
                 }
-                /*
+                select {
+                    incoming.onReceiveCatching {
+                        if (it.isClosed) {
+                            controller.disconnectUser(session)
+                        }
+                    }
+                }
 
-                     select<Unit> {
-                         incoming.onReceiveCatching {
-                             if (it.isClosed) {
-                                 controller.disconnectUser(session)
-                             }
-                         }
-                     }
-                 */
             } catch (e: OpenAiException) {
                 e.printStackTrace()
                 this.send(e.message.toFrameResponseError())

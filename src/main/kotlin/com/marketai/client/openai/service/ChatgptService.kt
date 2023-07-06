@@ -18,7 +18,6 @@ class ChatgptService(
 
     override suspend fun promptOpenAi(body: OpenAiPromptBody): OpenAiPromptResponse = try {
         val response = client.post {
-            timeout {  }
             url("${Constants.openAiBaseUrl}/v1/chat/completions")
             contentType(ContentType.Application.Json)
             header("Authorization", "Bearer ${Constants.openAiApiKey}")
@@ -26,7 +25,6 @@ class ChatgptService(
         }
         val responseBody = response.bodyAsText()
         Gson().fromJson(responseBody, OpenAiPromptResponse::class.java)
-
     } catch (e: Exception) {
         throw e
     }

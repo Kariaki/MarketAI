@@ -11,15 +11,15 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class FrameRequest(
     val role: MarkettRoles,
-    val content: String
+    val action: String
 )
 
 fun FrameRequest.toClientMessage(): ClientMessage {
     val newContent = if (role == MarkettRoles.markett) {
-        val category = PromptCategory.valueOf(content)
+        val category = PromptCategory.valueOf(action)
         val result = Prompts.prompts[category]
         result ?: ""
-    } else content
+    } else action
     return ClientMessage(content = newContent, role = Role.USER.name.lowercase())
 }
 
